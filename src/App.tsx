@@ -4,7 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { ClerkProvider, SignedIn, SignedOut } from "@clerk/clerk-react";
 import { ThemeProvider } from "@/components/theme-provider";
 
 // Pages
@@ -23,73 +22,59 @@ import NotFound from "./pages/NotFound";
 import RootLayout from "./components/layouts/RootLayout";
 import AuthLayout from "./components/layouts/AuthLayout";
 import DashboardLayout from "./components/layouts/DashboardLayout";
+import Index from "./pages/Index";
 
 const queryClient = new QueryClient();
 
-// Replace with your own publishable key
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "pk_test_replace-with-your-key";
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-      <ThemeProvider defaultTheme="dark" storageKey="movieflix-theme">
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/auth" element={
-                <SignedOut>
-                  <AuthLayout>
-                    <AuthPage />
-                  </AuthLayout>
-                </SignedOut>
+    <ThemeProvider defaultTheme="dark" storageKey="movieflix-theme">
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/auth" element={
+              <AuthLayout>
+                <AuthPage />
+              </AuthLayout>
+            } />
+            <Route element={<RootLayout />}>
+              {/* Public routes */}
+              <Route path="/" element={<HomePage />} />
+              <Route path="/movie/:id" element={<MovieDetails />} />
+              <Route path="/actor/:id" element={<ActorDetails />} />
+              <Route path="/search" element={<SearchResults />} />
+              
+              {/* Protected routes - removing SignedIn wrapper for now */}
+              <Route path="/dashboard" element={
+                <DashboardLayout>
+                  <Dashboard />
+                </DashboardLayout>
               } />
-              <Route element={<RootLayout />}>
-                {/* Public routes */}
-                <Route path="/" element={<HomePage />} />
-                <Route path="/movie/:id" element={<MovieDetails />} />
-                <Route path="/actor/:id" element={<ActorDetails />} />
-                <Route path="/search" element={<SearchResults />} />
-                
-                {/* Protected routes */}
-                <Route path="/dashboard" element={
-                  <SignedIn>
-                    <DashboardLayout>
-                      <Dashboard />
-                    </DashboardLayout>
-                  </SignedIn>
-                } />
-                <Route path="/bookmarks" element={
-                  <SignedIn>
-                    <DashboardLayout>
-                      <Bookmarks />
-                    </DashboardLayout>
-                  </SignedIn>
-                } />
-                <Route path="/history" element={
-                  <SignedIn>
-                    <DashboardLayout>
-                      <WatchHistory />
-                    </DashboardLayout>
-                  </SignedIn>
-                } />
-                <Route path="/settings" element={
-                  <SignedIn>
-                    <DashboardLayout>
-                      <Settings />
-                    </DashboardLayout>
-                  </SignedIn>
-                } />
-                
-                {/* Catch-all route */}
-                <Route path="*" element={<NotFound />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </ThemeProvider>
-    </ClerkProvider>
+              <Route path="/bookmarks" element={
+                <DashboardLayout>
+                  <Bookmarks />
+                </DashboardLayout>
+              } />
+              <Route path="/history" element={
+                <DashboardLayout>
+                  <WatchHistory />
+                </DashboardLayout>
+              } />
+              <Route path="/settings" element={
+                <DashboardLayout>
+                  <Settings />
+                </DashboardLayout>
+              } />
+              
+              {/* Catch-all route */}
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
