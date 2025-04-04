@@ -1,20 +1,14 @@
 
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { SignIn, SignUp, useUser } from "@clerk/clerk-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { SignIn, SignUp } from "@clerk/clerk-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "react-router-dom";
 
 const AuthPage = () => {
   const [activeTab, setActiveTab] = useState("sign-in");
-  const { isSignedIn } = useUser();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (isSignedIn) {
-      navigate("/dashboard");
-    }
-  }, [isSignedIn, navigate]);
 
   return (
     <div className="container mx-auto flex flex-col items-center justify-center">
@@ -48,7 +42,7 @@ const AuthPage = () => {
                       footer: "hidden",
                     },
                   }}
-                  afterSignInUrl="/dashboard"
+                  redirectUrl="/dashboard"
                 />
               </TabsContent>
               <TabsContent value="sign-up">
@@ -61,7 +55,7 @@ const AuthPage = () => {
                       footer: "hidden",
                     },
                   }}
-                  afterSignUpUrl="/dashboard"
+                  redirectUrl="/dashboard"
                 />
               </TabsContent>
             </Tabs>

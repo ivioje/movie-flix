@@ -3,8 +3,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SignedIn, SignedOut } from "@clerk/clerk-react";
 
 // Pages
 import HomePage from "./pages/HomePage";
@@ -17,12 +18,12 @@ import WatchHistory from "./pages/WatchHistory";
 import Settings from "./pages/Settings";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
+import Index from "./pages/Index";
 
 // Layout components
 import RootLayout from "./components/layouts/RootLayout";
 import AuthLayout from "./components/layouts/AuthLayout";
 import DashboardLayout from "./components/layouts/DashboardLayout";
-import Index from "./pages/Index";
 
 const queryClient = new QueryClient();
 
@@ -34,38 +35,49 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            <Route path="/" element={<Index />} />
+            
             <Route path="/auth" element={
               <AuthLayout>
                 <AuthPage />
               </AuthLayout>
             } />
+            
             <Route element={<RootLayout />}>
               {/* Public routes */}
-              <Route path="/" element={<HomePage />} />
+              <Route path="/home" element={<HomePage />} />
               <Route path="/movie/:id" element={<MovieDetails />} />
               <Route path="/actor/:id" element={<ActorDetails />} />
               <Route path="/search" element={<SearchResults />} />
               
-              {/* Protected routes - removing SignedIn wrapper for now */}
+              {/* Protected routes */}
               <Route path="/dashboard" element={
-                <DashboardLayout>
-                  <Dashboard />
-                </DashboardLayout>
+                <SignedIn>
+                  <DashboardLayout>
+                    <Dashboard />
+                  </DashboardLayout>
+                </SignedIn>
               } />
               <Route path="/bookmarks" element={
-                <DashboardLayout>
-                  <Bookmarks />
-                </DashboardLayout>
+                <SignedIn>
+                  <DashboardLayout>
+                    <Bookmarks />
+                  </DashboardLayout>
+                </SignedIn>
               } />
               <Route path="/history" element={
-                <DashboardLayout>
-                  <WatchHistory />
-                </DashboardLayout>
+                <SignedIn>
+                  <DashboardLayout>
+                    <WatchHistory />
+                  </DashboardLayout>
+                </SignedIn>
               } />
               <Route path="/settings" element={
-                <DashboardLayout>
-                  <Settings />
-                </DashboardLayout>
+                <SignedIn>
+                  <DashboardLayout>
+                    <Settings />
+                  </DashboardLayout>
+                </SignedIn>
               } />
               
               {/* Catch-all route */}

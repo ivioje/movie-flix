@@ -1,7 +1,8 @@
 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Film, Clapperboard, Search, Bookmark, User } from "lucide-react";
+import { Film, Clapperboard, Search, Bookmark, User, LogIn } from "lucide-react";
+import { SignedIn, SignedOut } from "@clerk/clerk-react";
 
 const Index = () => {
   return (
@@ -15,14 +16,26 @@ const Index = () => {
         </div>
         
         <div className="flex flex-wrap gap-4 justify-center mt-6">
-          <Button asChild size="lg" className="gap-2">
-            <Link to="/auth">
-              <User className="h-5 w-5" />
-              Sign in
-            </Link>
-          </Button>
+          <SignedIn>
+            <Button asChild size="lg" className="gap-2">
+              <Link to="/dashboard">
+                <User className="h-5 w-5" />
+                My Dashboard
+              </Link>
+            </Button>
+          </SignedIn>
+          
+          <SignedOut>
+            <Button asChild size="lg" className="gap-2">
+              <Link to="/auth">
+                <LogIn className="h-5 w-5" />
+                Sign in
+              </Link>
+            </Button>
+          </SignedOut>
+          
           <Button asChild size="lg" variant="outline" className="gap-2">
-            <Link to="/">
+            <Link to="/home">
               <Film className="h-5 w-5" />
               Browse Movies
             </Link>
