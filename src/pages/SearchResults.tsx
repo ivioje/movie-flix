@@ -89,6 +89,9 @@ const SearchResults = () => {
         <div className="text-center py-12">
           <h3 className="text-xl font-bold">Error loading results</h3>
           <p className="text-muted-foreground">Please try again later</p>
+          <pre className="mt-4 p-4 bg-muted rounded-md text-xs overflow-auto max-w-full">
+            {JSON.stringify(error, null, 2)}
+          </pre>
         </div>
       );
     }
@@ -153,6 +156,7 @@ const SearchResults = () => {
               <SelectItem value="trending">Trending</SelectItem>
               <SelectItem value="popular">Popular</SelectItem>
               <SelectItem value="upcoming">Coming Soon</SelectItem>
+              <SelectItem value="topRated">Top Rated</SelectItem>
             </SelectContent>
           </Select>
         </div>

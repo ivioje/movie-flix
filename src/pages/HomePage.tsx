@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchTrending, fetchComingSoon, fetchPopular } from "@/services/api";
+import { fetchTrending, fetchComingSoon, fetchPopular, fetchTopRatedMovies } from "@/services/api";
 import { MovieCard } from "@/components/movie-card";
 import { SectionHeader } from "@/components/section-header";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { Play } from "lucide-react";
 const HomePage = () => {
   const [heroMovie, setHeroMovie] = useState<any>(null);
 
-  // Fetch trending movies
+  // Fetch trending movies - updated to use the correct endpoint
   const { 
     data: trendingMovies,
     isLoading: isTrendingLoading,
@@ -20,6 +20,16 @@ const HomePage = () => {
   } = useQuery({
     queryKey: ['trending'],
     queryFn: fetchTrending
+  });
+
+  // Fetch top rated movies
+  const { 
+    data: topRatedMovies,
+    isLoading: isTopRatedLoading,
+    error: topRatedError
+  } = useQuery({
+    queryKey: ['topRated'],
+    queryFn: fetchTopRatedMovies
   });
 
   // Fetch upcoming movies
@@ -47,8 +57,12 @@ const HomePage = () => {
     if (trendingMovies?.length > 0) {
       const randomIndex = Math.floor(Math.random() * Math.min(5, trendingMovies.length));
       setHeroMovie(trendingMovies[randomIndex]);
+    } else if (topRatedMovies?.length > 0) {
+      // Fallback to top rated if trending is empty
+      const randomIndex = Math.floor(Math.random() * Math.min(5, topRatedMovies.length));
+      setHeroMovie(topRatedMovies[randomIndex]);
     }
-  }, [trendingMovies]);
+  }, [trendingMovies, topRatedMovies]);
 
   const renderMovieList = (movies: any[], isLoading: boolean, error: any) => {
     if (isLoading) {
@@ -63,6 +77,10 @@ const HomePage = () => {
 
     if (error) {
       return <div className="col-span-full text-center">Failed to load movies</div>;
+    }
+
+    if (!movies || movies.length === 0) {
+      return <div className="col-span-full text-center">No movies found</div>;
     }
 
     return movies?.map((movie) => (
@@ -131,6 +149,22 @@ const HomePage = () => {
           <ScrollArea>
             <div className="flex gap-4 pb-4">
               {renderMovieList(trendingMovies, isTrendingLoading, trendingError)}
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </section>
+
+        {/* Top Rated Movies Section */}
+        <section>
+          <SectionHeader 
+            title="Top Rated Movies" 
+            description="Highest rated movies on IMDB"
+            viewAllLink="/search?category=topRated"
+            className="mb-6"
+          />
+          <ScrollArea>
+            <div className="flex gap-4 pb-4">
+              {renderMovieList(topRatedMovies, isTopRatedLoading, topRatedError)}
             </div>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
