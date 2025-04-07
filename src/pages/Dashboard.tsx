@@ -9,21 +9,65 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Bookmark, Clock, Film, Star } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Bookmark, Clock, Film, Star, AlertCircle, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Dashboard = () => {
-  const { user, isSignedIn } = useUser();
+  const { user, isSignedIn, isLoaded: isUserLoaded } = useUser();
+  const [retryCount, setRetryCount] = useState(0);
   
   const { 
     data: userData, 
     isLoading, 
-    error 
+    error,
+    refetch,
+    isError 
   } = useQuery({
-    queryKey: ['userData', user?.id],
+    queryKey: ['userData', user?.id, retryCount],
     queryFn: () => getUserData(user?.id as string),
-    enabled: !!user?.id,
+    enabled: !!user?.id && isUserLoaded,
+    retry: 2,
+    retryDelay: (attempt) => Math.min(attempt > 1 ? 3000 : 1000, 30000),
   });
+
+  // Force a refetch if we detect we might be back online
+  useEffect(() => {
+    const handleOnline = () => {
+      if (user?.id) {
+        setRetryCount(count => count + 1);
+      }
+    };
+
+    window.addEventListener('online', handleOnline);
+    return () => window.removeEventListener('online', handleOnline);
+  }, [user?.id]);
+
+  if (!isUserLoaded) {
+    return (
+      <div className="space-y-8">
+        <Skeleton className="h-12 w-64" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {Array(3).fill(0).map((_, i) => (
+            <Skeleton key={i} className="h-40 rounded-lg" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (!isSignedIn) {
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-bold mb-4">Sign In Required</h2>
+        <p className="text-muted-foreground mb-6">Please sign in to view your dashboard</p>
+        <Link to="/auth">
+          <Button>Sign In</Button>
+        </Link>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -44,11 +88,22 @@ const Dashboard = () => {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
-      <div className="text-center">
-        <h2 className="text-2xl font-bold">Error loading profile</h2>
-        <p className="text-muted-foreground">Please try again later</p>
+      <div className="space-y-8">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error loading profile</AlertTitle>
+          <AlertDescription>
+            {error instanceof Error ? error.message : "Could not load your data. Please check your connection."}
+          </AlertDescription>
+        </Alert>
+        <div className="text-center">
+          <Button onClick={() => setRetryCount(count => count + 1)} className="gap-2">
+            <RefreshCw className="h-4 w-4" />
+            Retry
+          </Button>
+        </div>
       </div>
     );
   }
@@ -58,7 +113,9 @@ const Dashboard = () => {
   
   // Sort watch history by most recent
   const recentWatchHistory = [...watchHistory].sort((a, b) => {
-    return new Date(b.watchedAt).getTime() - new Date(a.watchedAt).getTime();
+    const dateA = a.watchedAt?.toDate?.() || new Date(a.watchedAt);
+    const dateB = b.watchedAt?.toDate?.() || new Date(b.watchedAt);
+    return dateB.getTime() - dateA.getTime();
   }).slice(0, 10);
 
   return (

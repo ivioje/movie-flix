@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { Bookmark, BookmarkCheck, Star } from "lucide-react";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "@/components/ui/use-toast";
-import { bookmarkMovie, removeBookmark } from "@/services/userServices";
+import { bookmarkMovie, removeBookmark, getUserData } from "@/services/userServices";
 import { cn } from "@/lib/utils";
 
 interface MovieCardProps {
@@ -35,6 +35,24 @@ export function MovieCard({ movie, variant = "default", className }: MovieCardPr
     : movie.year 
       ? new Date(movie.year).getFullYear() 
       : "N/A";
+  
+  // Check if movie is bookmarked when component mounts
+  useEffect(() => {
+    const checkBookmarkStatus = async () => {
+      if (isSignedIn && user && movie.id) {
+        try {
+          const userData = await getUserData(user.id);
+          const bookmarks = userData?.bookmarks || [];
+          const isMovieBookmarked = bookmarks.some((item: any) => item.id === movie.id);
+          setIsBookmarked(isMovieBookmarked);
+        } catch (error) {
+          console.error("Error checking bookmark status:", error);
+        }
+      }
+    };
+    
+    checkBookmarkStatus();
+  }, [movie.id, isSignedIn, user]);
     
   const handleBookmark = async (e: React.MouseEvent) => {
     e.preventDefault();

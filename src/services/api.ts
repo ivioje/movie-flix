@@ -65,6 +65,7 @@ export const fetchMovieDetails = async (id: string) => {
       ?.filter((person: any) => person.job === 'Director')
       .map((person: any) => person.name) || [];
     
+    // Create a structured response with only the fields we need
     return {
       id: response.data.id.toString(),
       title: response.data.title,
@@ -81,7 +82,13 @@ export const fetchMovieDetails = async (id: string) => {
       countries_of_origin: response.data.production_countries?.map((country: any) => country.name) || [],
       similar_movies: transformMovieData({ results: response.data.similar?.results || [] }),
       keywords: response.data.keywords?.keywords || [],
-      videos: response.data.videos?.results || []
+      videos: response.data.videos?.results || [],
+      // Add empty objects for these fields to fix type errors
+      technical_specs: {},
+      box_office: {
+        budget: "N/A",
+        gross_worldwide: "N/A"
+      }
     };
   } catch (error) {
     console.error(`Error fetching movie details for ID ${id}:`, error);
@@ -196,17 +203,16 @@ export const fetchAutoComplete = async (query: string) => {
       }
     });
     
-    return {
-      results: response.data.results.slice(0, 7).map((item: any) => ({
-        id: item.id,
-        title: item.title || item.name,
-        media_type: item.media_type,
-        year: item.release_date ? 
-              new Date(item.release_date).getFullYear() : 
-              item.first_air_date ? 
-              new Date(item.first_air_date).getFullYear() : null
-      }))
-    };
+    // Return the results directly, not in a nested object
+    return response.data.results.slice(0, 7).map((item: any) => ({
+      id: item.id,
+      title: item.title || item.name,
+      media_type: item.media_type,
+      year: item.release_date ? 
+            new Date(item.release_date).getFullYear() : 
+            item.first_air_date ? 
+            new Date(item.first_air_date).getFullYear() : null
+    }));
   } catch (error) {
     console.error(`Error fetching autocomplete for "${query}":`, error);
     throw error;
