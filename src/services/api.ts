@@ -1,9 +1,9 @@
 
 import axios from "axios";
 
-const API_BASE_URL = "https://api.themoviedb.org/3";
-const API_KEY = "fc0734ec733730db85cce5d22138a3b9";
-const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/";
+const API_BASE_URL = import.meta.env.VITE_TMDB_BASE_URL;
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const IMAGE_BASE_URL = import.meta.env.VITE_TMDB_IMAGE_URL;
 
 // Create a reusable API instance with common parameters
 const api = axios.create({
@@ -15,7 +15,7 @@ const api = axios.create({
 
 // Helper function to get full image URL with appropriate size
 const getImageUrl = (path: string | null, size: string = "w500") => {
-  if (!path) return "https://via.placeholder.com/500x750?text=No+Image";
+  if (!path) return "https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
   return `${IMAGE_BASE_URL}${size}${path}`;
 };
 
@@ -49,6 +49,17 @@ export const fetchTrending = async () => {
     return transformMovieData(response.data);
   } catch (error) {
     console.error('Error fetching trending movies:', error);
+    throw error;
+  }
+};
+
+export const fetchMovieList = async () => {
+  try {
+    const response = await api.get('/movie/changes');
+    // console.log(response.data);
+    return transformMovieData(response.data);
+  } catch (error) {
+    console.error('Error fetching movie list:', error);
     throw error;
   }
 };

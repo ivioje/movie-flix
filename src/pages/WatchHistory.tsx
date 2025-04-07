@@ -1,8 +1,8 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { useQuery } from "@tanstack/react-query";
-import { getUserData } from "@/services/userServices";
+import { clearWatchHistory, getUserData } from "@/services/userServices";
 import { MovieCard } from "@/components/movie-card";
 import { SectionHeader } from "@/components/section-header";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -25,11 +25,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { toast } from "@/components/ui/use-toast";
 
 const WatchHistory = () => {
   const { user } = useUser();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("recent");
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [watchHistory, setWatchHistory] = useState<any[]>([]);
+
   
   const { 
     data: userData, 
@@ -41,7 +45,11 @@ const WatchHistory = () => {
     enabled: !!user?.id,
   });
 
-  const watchHistory = userData?.watchHistory || [];
+  useEffect(() => {
+    if (userData?.watchHistory && userData.watchHistory !== watchHistory) {
+      setWatchHistory(userData.watchHistory);
+    }
+  }, [userData]);
 
   // Filter by search term
   const filteredHistory = watchHistory.filter((item: any) => 
@@ -71,14 +79,42 @@ const WatchHistory = () => {
     return new Date(b.watchedAt).getTime() - new Date(a.watchedAt).getTime();
   });
 
-  const formatWatchDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
-    });
+  const formatWatchDate = (dateString: any) => {
+    const milliseconds = dateString.seconds * 1000 + dateString.nanoseconds / 1000000;
+    const date = new Date(milliseconds);
+    return date.toDateString();
   };
+
+  const handleClearHistory = async () => {
+    if (user?.id) {
+      if (!watchHistory || watchHistory.length === 0) {
+        toast({
+          title: "No watch history found",
+          description: "You haven't watched anything yet.",
+          variant: "destructive",
+        });
+        setDialogOpen(false);
+        return;
+      }
+      try {
+        await clearWatchHistory(user.id);
+        setWatchHistory([]);
+        toast({
+          title: "History Cleared",
+          description: "Your watch history has been cleared.",
+          variant: "default",
+        });
+        setDialogOpen(false);
+      } catch (error) {
+        console.error("Error clearing watch history:", error);
+        toast({
+          title: "Error",
+          description: "There was an error clearing your watch history. Please try again.",
+        });
+      }
+    }
+  };
+  
 
   if (isLoading) {
     return (
@@ -115,7 +151,7 @@ const WatchHistory = () => {
           className="!mb-0"
         />
 
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm" className="gap-2">
               <Trash2 className="h-4 w-4" />
@@ -130,8 +166,8 @@ const WatchHistory = () => {
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <Button variant="outline">Cancel</Button>
-              <Button variant="destructive">Clear History</Button>
+              <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+              <Button variant="destructive" onClick={handleClearHistory}>Clear History</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

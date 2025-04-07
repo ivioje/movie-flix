@@ -123,6 +123,17 @@ export const addToWatchHistory = async (userId: string, movieId: string, movieDa
   });
 };
 
+export const clearWatchHistory = async (userId: string) => {
+  const userDocRef = doc(db, "users", userId); 
+  try {
+    await updateDoc(userDocRef, {
+      watchHistory: []
+    });
+  } catch (error) {
+    console.error("Error clearing watch history:", error);
+  }
+};
+
 // Get user data
 export const getUserData = async (userId: string) => {
   return retryOperation(async () => {

@@ -18,6 +18,9 @@ interface MovieCardProps {
     rating?: number;
     year?: string | number;
     type?: string;
+    videos?: any;
+    backdrop_path?: string;
+    poster_path?: string;
   };
   variant?: "default" | "large";
   className?: string;
@@ -26,9 +29,8 @@ interface MovieCardProps {
 export function MovieCard({ movie, variant = "default", className }: MovieCardProps) {
   const { isSignedIn, user } = useUser();
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  
-  const posterUrl = movie.poster || "https://via.placeholder.com/300x450?text=No+Image";
+  const [isLoading, setIsLoading] = useState(false);  
+  const posterUrl = movie?.poster || movie?.backdrop_path || movie?.poster_path || "https://charlotteudo.org/wp-content/uploads/2023/05/placeholder-square-black.png";
   
   const releaseYear = typeof movie.year === 'number' 
     ? movie.year 

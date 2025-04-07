@@ -13,12 +13,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
 import { Bookmark, BookmarkCheck, Play, Star, Clock } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
+import TrailerModal from "@/components/TrailerModal";
 
 const MovieDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { isSignedIn, user } = useUser();
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [trailerUrl, setTrailerUrl] = useState<string | null>(null);
   
   // Fetch movie details
   const { 
@@ -83,7 +85,6 @@ const MovieDetails = () => {
       });
       return;
     }
-    
     setIsLoading(true);
     try {
       if (isBookmarked) {
@@ -110,6 +111,20 @@ const MovieDetails = () => {
       setIsLoading(false);
     }
   };
+
+  const handleWatchTrailer = () => {
+    if (movie && movie.videos && movie.videos.length > 0) {
+      setTrailerUrl(movie.videos[0].key);
+    } else {
+      toast({
+        title: "No trailer available",
+        description: "Sorry, no trailer is available for this movie.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const closeTrailer = () => setTrailerUrl(null);
 
   if (isMovieLoading) {
     return (
@@ -142,7 +157,7 @@ const MovieDetails = () => {
       {/* Movie backdrop */}
       <div 
         className="relative w-full h-[40vh] md:h-[60vh] bg-cover bg-center"
-        style={{ backgroundImage: `url(${movie.backdrop_path || movie.poster_path})` }}
+        style={{ backgroundImage: `url(${movie.backdrop_path || movie.poster_path || 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'})` }}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent" />
         <div className="container relative h-full"></div>
@@ -153,7 +168,7 @@ const MovieDetails = () => {
           {/* Movie poster */}
           <div className="w-full md:w-1/4 lg:w-1/5 flex-shrink-0">
             <img 
-              src={movie.poster_path || "https://via.placeholder.com/300x450?text=No+Image"} 
+              src={movie.poster_path || movie.backdrop_path || "https://charlotteudo.org/wp-content/uploads/2023/05/placeholder-square-black.png"} 
               alt={movie.title} 
               className="w-full rounded-md shadow-lg aspect-[2/3] object-cover"
             />
@@ -196,7 +211,7 @@ const MovieDetails = () => {
 
             {/* Action buttons */}
             <div className="flex flex-wrap gap-3">
-              <Button size="lg" className="gap-2">
+              <Button size="lg" className="gap-2" onClick={handleWatchTrailer}>
                 <Play className="h-4 w-4" />
                 Watch Trailer
               </Button>
@@ -224,6 +239,7 @@ const MovieDetails = () => {
                 Watch Later
               </Button>
             </div>
+            <TrailerModal trailerUrl={trailerUrl} onClose={closeTrailer} movieTitle={movie.title} />
 
             {/* Tabs for overview, cast, details */}
             <Tabs defaultValue="overview" className="mt-8">

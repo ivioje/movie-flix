@@ -67,8 +67,8 @@ export const Navbar = ({ isScrolled = false }: NavbarProps) => {
             <span className="text-xl font-bold text-primary">MovieFlix</span>
           </Link>
           <nav className="hidden ml-6 md:flex items-center space-x-4">
-            <Link to="/" className="navbar-item">Home</Link>
-            <Link to="/search?category=movie" className="navbar-item">Movies</Link>
+            <Link to="/home" className="navbar-item">Home</Link>
+            <Link to="/movies" className="navbar-item">Movies</Link>
             <Link to="/search?category=tv" className="navbar-item">TV Shows</Link>
             {isSignedIn && (
               <Link to="/dashboard" className="navbar-item">My Profile</Link>

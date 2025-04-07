@@ -1,16 +1,22 @@
 
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchTrending, fetchComingSoon, fetchPopular, fetchTopRatedMovies } from "@/services/api";
+import { fetchTrending, fetchComingSoon, fetchPopular, fetchTopRatedMovies, fetchMovieDetails } from "@/services/api";
 import { MovieCard } from "@/components/movie-card";
 import { SectionHeader } from "@/components/section-header";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Play } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
+import { toast } from "@/components/ui/use-toast";
+import TrailerModal from "@/components/TrailerModal";
 
 const HomePage = () => {
   const [heroMovie, setHeroMovie] = useState<any>(null);
+  const [trailerUrl, setTrailerUrl] = useState<string | null>(null);
+
+  console.log(heroMovie, 'heroMovie')
 
   // Fetch trending movies - updated to use the correct endpoint
   const { 
@@ -51,6 +57,20 @@ const HomePage = () => {
     queryKey: ['popular'],
     queryFn: fetchPopular
   });
+
+  const handleWatchTrailer = () => {
+    if (heroMovie && heroMovie.videos && heroMovie.videos.length > 0) {
+      setTrailerUrl(heroMovie.videos[0].key);
+    } else {
+      toast({
+        title: "No trailer available",
+        description: "Sorry, no trailer is available for this movie.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const closeTrailer = () => setTrailerUrl(null);
 
   useEffect(() => {
     // Set a random trending movie as hero when data is loaded
@@ -122,11 +142,15 @@ const HomePage = () => {
               </div>
               
               <div className="flex gap-4 animate-fade-in" style={{animationDelay: "0.4s"}}>
-                <Button size="lg" className="gap-2">
+                <Button size="lg" className="gap-2" onClick={handleWatchTrailer}>
                   <Play className="h-4 w-4" />
                   Watch Trailer
                 </Button>
-                <Button size="lg" variant="outline">More Info</Button>
+                <Button size="lg" variant="outline">
+                  <Link to={`/movie/${heroMovie.id}`} className="flex items-center gap-2">
+                    More Info
+                  </Link>
+                </Button>
               </div>
             </div>
           </div>
@@ -136,6 +160,8 @@ const HomePage = () => {
           <Skeleton className="h-32 w-32 rounded-full" />
         </div>
       )}
+      <TrailerModal trailerUrl={trailerUrl} onClose={closeTrailer} movieTitle={heroMovie?.title} />
+
 
       <div className="container space-y-10 mt-8">
         {/* Trending Movies Section */}

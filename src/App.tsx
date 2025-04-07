@@ -24,6 +24,7 @@ import Index from "./pages/Index";
 import RootLayout from "./components/layouts/RootLayout";
 import AuthLayout from "./components/layouts/AuthLayout";
 import DashboardLayout from "./components/layouts/DashboardLayout";
+import Movies from "./pages/Movies";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ const App = () => (
               <Route path="/movie/:id" element={<MovieDetails />} />
               <Route path="/actor/:id" element={<ActorDetails />} />
               <Route path="/search" element={<SearchResults />} />
+              <Route path="/movies" element={<Movies />} />
               
               {/* Protected routes */}
               <Route path="/dashboard" element={
