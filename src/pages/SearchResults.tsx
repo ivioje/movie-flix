@@ -46,16 +46,20 @@ const SearchResults = () => {
   // Filter results by category if needed
   const filteredResults = searchResults?.filter((item: any) => {
     if (selectedCategory === "all") return true;
-    if (selectedCategory === "movie" && item.type === "Movie") return true;
-    if (selectedCategory === "tv" && item.type === "TV Series") return true;
-    if (selectedCategory === "upcoming" && item.coming_soon) return true;
+    if (selectedCategory === "movie" && item.type === "movie") return true;
+    if (selectedCategory === "tv" && item.type === "tv") return true;
+    if (selectedCategory === "person" && item.type === "person") return true;
     if (selectedCategory === "trending" && item.trending) return true;
-    if (selectedCategory === "popular" && item.popular) return true;
+    if (selectedCategory === "popular" && item.popularity > 20) return true;
+    if (selectedCategory === "upcoming" && item.coming_soon) return true;
+    if (selectedCategory === "topRated" && item.rating > 7.5) return true;
     return false;
   });
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!searchTerm.trim()) return;
+    
     const newParams = new URLSearchParams(location.search);
     newParams.set("q", searchTerm);
     navigate(`/search?${newParams.toString()}`);
@@ -153,6 +157,7 @@ const SearchResults = () => {
               <SelectItem value="all">All Categories</SelectItem>
               <SelectItem value="movie">Movies</SelectItem>
               <SelectItem value="tv">TV Shows</SelectItem>
+              <SelectItem value="person">People</SelectItem>
               <SelectItem value="trending">Trending</SelectItem>
               <SelectItem value="popular">Popular</SelectItem>
               <SelectItem value="upcoming">Coming Soon</SelectItem>
