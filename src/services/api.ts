@@ -1,9 +1,9 @@
 
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.TMDB_BASE_URL;
-const API_KEY = import.meta.env.TMDB_API_KEY;
-const IMAGE_BASE_URL = import.meta.env.TMDB_IMAGE_URL;
+const API_BASE_URL = import.meta.env.VITE_TMDB_BASE_URL;
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const IMAGE_BASE_URL = import.meta.env.VITE_TMDB_IMAGE_URL;
 
 // Create a reusable API instance with common parameters
 const api = axios.create({
