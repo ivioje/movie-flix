@@ -1,73 +1,26 @@
-# Welcome to your Lovable project
+# ReadMe for MovieFlix Web Application
 
-## Project info
+## MovieFlix Web Application
+This is a web application that allows users to search for movies, view details about them, and manage their watchlist. The application is built using ReactJS/TypeScript, Firebase, Tailwind CSS, and Shadcn UI for the frontend. Authentication is handled using Clerk Authentication.
 
-**URL**: https://lovable.dev/projects/1ca1f1d2-5b86-4d78-8002-e66bd6df1976
+## Features
+- Search for movies by title
+- View movie details including title, release date, and overview
+- Add movies to a watchlist
+- View and manage the watchlist
+- Responsive design using Tailwind CSS and Shadcn UI
+- User authentication (login/logout) using Clerk Authentication
+- User-specific watchlists
+- Integration with third-party APIs for movie data (TMDB API)
+- Light/Dark mode support
 
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/1ca1f1d2-5b86-4d78-8002-e66bd6df1976) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
+## Technologies Used
+- ReactJS
 - TypeScript
-- React
-- shadcn-ui
+- Firebase
+- Shadcn UI
 - Tailwind CSS
+- Clerk Authentication
+- TMDB API
+- Vite for development server and build tool
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/1ca1f1d2-5b86-4d78-8002-e66bd6df1976) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes it is!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)

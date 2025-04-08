@@ -15,7 +15,7 @@ const api = axios.create({
 
 // Helper function to get full image URL with appropriate size
 const getImageUrl = (path: string | null, size: string = "w500") => {
-  if (!path) return "https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+  if (!path) return "https://static.vecteezy.com/system/resources/thumbnails/008/202/358/original/animation-loading-circle-icon-loading-gif-loading-screen-gif-loading-spinner-gif-loading-animation-loading-on-black-background-free-video.jpg";
   return `${IMAGE_BASE_URL}${size}${path}`;
 };
 
